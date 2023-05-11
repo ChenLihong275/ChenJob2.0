@@ -7,12 +7,7 @@ logout('login.html')
 // 进入页面渲染
 async function render() {
   try {
-    const res = await axios({
-      url: '/dashboard',
-      headers: {
-        Authorization: localStorage.getItem('token'),
-      },
-    })
+    const res = await axios({ url: '/dashboard' })
     const { overview } = res.data.data
     Object.keys(overview).forEach(key => (document.querySelector(`.${key}`).innerHTML = overview[key]))
   } catch (error) {
