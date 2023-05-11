@@ -16,6 +16,7 @@ document.querySelector('#btn-login').addEventListener('click', async function ()
     const res = await axios.post('/login', { username, password })
     toastShow(res.data.message)
     location.href = 'index.html'
+    localStorage.setItem('username', username)
   } catch (error) {
     toastShow(error.response.data.message)
   }
