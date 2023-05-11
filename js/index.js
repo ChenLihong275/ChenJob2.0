@@ -4,3 +4,16 @@ permissonControl('login.html')
 renderUsername()
 // 点击退出跳转至登录页
 logout('login.html')
+// 进入页面渲染
+async function render() {
+  const res = await axios({
+    url: '/dashboard',
+    headers: {
+      Authorization: localStorage.getItem('token'),
+    },
+  })
+  console.log(res.data.data.overview)
+  const { overview } = res.data.data
+  Object.keys(overview).forEach(key => (document.querySelector(`.${key}`).innerHTML = overview[key]))
+}
+render()
