@@ -26,7 +26,6 @@ function logout(url) {
 // 添加请求拦截器
 axios.interceptors.request.use(
   function (config) {
-    console.log(config)
     // 在发送请求之前做些什么
     if (localStorage.getItem('token')) {
       config.headers.Authorization = localStorage.getItem('token')
@@ -49,7 +48,12 @@ axios.interceptors.response.use(
   function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
-    console.dir(error)
+    if (error.response.status === 401) {
+      toastShow('登录失效，请重新登录')
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      setTimeout(() => (location.href = 'login.html'), 1500)
+    }
     return Promise.reject(error)
   }
 )
