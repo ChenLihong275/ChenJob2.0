@@ -6,17 +6,18 @@
 // 6、页面跳转
 document.querySelector('#btn-login').addEventListener('click', async function () {
   const { username, password } = serialize(document.querySelector('.login-form'), { hash: true, empty: true })
-  if (!/^[\w-]{8,30}$/.test(username)) {
+  if (!/^\w{8,30}$/.test(username)) {
     return toastShow('用户名8-30位')
   }
-  if (!/^[\w-]{6,30}$/.test(password)) {
+  if (!/^\w{6,30}$/.test(password)) {
     return toastShow('密码6-30位')
   }
   try {
     const res = await axios.post('/login', { username, password })
     toastShow(res.data.message)
-    location.href = 'index.html'
-    localStorage.setItem('username', username)
+    localStorage.setItem('username', res.data.data.username)
+    localStorage.setItem('token', res.data.data.token)
+    setTimeout(() => (location.href = 'index.html'), 1500)
   } catch (error) {
     toastShow(error.response.data.message)
   }
