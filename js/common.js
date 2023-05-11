@@ -4,3 +4,9 @@ function toastShow(msg) {
   toast.show()
 }
 axios.defaults.baseURL = 'https://hmajax.itheima.net'
+// 添加公共函数，判断有无token
+function permissonControl(url) {
+  if (localStorage.getItem('token')) return
+  toastShow('请先登录')
+  setTimeout(() => (location.href = url), 1500)
+}
