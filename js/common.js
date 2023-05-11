@@ -10,3 +10,7 @@ function permissonControl(url) {
   toastShow('请先登录')
   setTimeout(() => (location.href = url), 1500)
 }
+// 渲染首页用户名
+function renderUsername() {
+  document.querySelector('.username').innerHTML = localStorage.getItem('username')
+}
