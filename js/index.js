@@ -6,14 +6,23 @@ renderUsername()
 logout('login.html')
 // 进入页面渲染
 async function render() {
-  const res = await axios({
-    url: '/dashboard',
-    headers: {
-      Authorization: localStorage.getItem('token'),
-    },
-  })
-  console.log(res.data.data.overview)
-  const { overview } = res.data.data
-  Object.keys(overview).forEach(key => (document.querySelector(`.${key}`).innerHTML = overview[key]))
+  try {
+    const res = await axios({
+      url: '/dashboard',
+      headers: {
+        Authorization: localStorage.getItem('token'),
+      },
+    })
+    const { overview } = res.data.data
+    Object.keys(overview).forEach(key => (document.querySelector(`.${key}`).innerHTML = overview[key]))
+  } catch (error) {
+    // 判断登录失败原因
+    if (error.response.status === 401) {
+      toastShow('登录失效，请重新登录')
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      setTimeout(() => (location.href = 'login.html'), 1500)
+    }
+  }
 }
 render()
