@@ -9,9 +9,13 @@ async function render() {
   const res = await axios({ url: '/dashboard' })
   const { overview, year, salaryData, groupData } = res.data
   renderHeaderData(overview)
+  // 全年薪资走势折线图
   renderYear(year)
+  // 班级薪资饼图
   renderSalary(salaryData)
+  // 每组薪资柱图
   renderGroupData(groupData)
+  renderGenderSalary(salaryData)
 }
 render()
 function renderHeaderData(overview) {
@@ -173,32 +177,109 @@ function renderSalary(salaryData) {
   myChart.setOption(option)
 }
 function renderGroupData(groupData) {
-  console.log(groupData)
-  console.log(groupData[1])
   const myChart = echarts.init(document.querySelector('#lines'))
   const option = {
-    legend: {
-      type: 'plain',
+    // legend: {
+    //   type: 'plain',
+    // },
+    grid: {
+      left: 70,
+      top: 30,
+      right: 30,
+      bottom: 50,
     },
     tooltip: {},
+    // ECharts4开始支持了数据集
     dataset: {
-      dimensions: ['product', '期望薪资', '实际薪资'],
+      dimensions: ['name', '期望薪资', '实际薪资'],
       source: groupData[1].map(ele => {
-        return { product: ele.name, 期望薪资: ele.hope_salary, 实际薪资: ele.salary }
+        return { name: ele.name, 期望薪资: ele.hope_salary, 实际薪资: ele.salary }
       }),
     },
     xAxis: {
       type: 'category',
+      // x轴线设置
       axisLine: {
+        lineStyle: {
+          type: 'dashed',
+          color: '#ccc',
+        },
+      },
+      axisLabel: {
+        color: 'blue',
+      },
+    },
+    yAxis: {
+      // 刻度线设置
+      splitLine: {
         lineStyle: {
           type: 'dashed',
         },
       },
     },
-    yAxis: {},
-    // Declare several bar series, each will be mapped
-    // to a column of dataset.source by default.
-    series: [{ type: 'bar' }, { type: 'bar' }],
+    series: [
+      {
+        type: 'bar',
+        // 背景色
+        // showBackground: true,
+        // backgroundStyle: {
+        //   color: 'red',
+        // },
+        itemStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: '#37d39b', // 0% 处的颜色
+              },
+              {
+                offset: 1,
+                color: '#ccc', // 100% 处的颜色
+              },
+            ],
+            global: false, // 缺省为 false
+          },
+        },
+      },
+      {
+        type: 'bar',
+        itemStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: '#4ca0ee', // 0% 处的颜色
+              },
+              {
+                offset: 1,
+                color: '#ccc', // 100% 处的颜色
+              },
+            ],
+            global: false, // 缺省为 false
+          },
+        },
+      },
+    ],
   }
   myChart.setOption(option)
+  document.querySelector('#btns').addEventListener('click', function (e) {
+    if (e.target.classList.contains('btn-xs')) {
+      document.querySelector('.btn-blue').classList.remove('btn-blue')
+      e.target.classList.add('btn-blue')
+      ;(option.dataset.source = groupData[e.target.innerText].map(ele => {
+        return { name: ele.name, 期望薪资: ele.hope_salary, 实际薪资: ele.salary }
+      })),
+        myChart.setOption(option)
+    }
+  })
 }
