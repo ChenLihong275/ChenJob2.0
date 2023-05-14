@@ -7,7 +7,7 @@ logout('login.html')
 // 进入页面渲染
 async function render() {
   const res = await axios({ url: '/dashboard' })
-  const { overview, year, salaryData, groupData } = res.data
+  const { overview, year, salaryData, groupData, provinceData } = res.data
   renderHeaderData(overview)
   // 全年薪资走势折线图
   renderYear(year)
@@ -16,6 +16,7 @@ async function render() {
   // 每组薪资柱图
   renderGroupData(groupData)
   renderGenderSalary(salaryData)
+  renderProvinceData(provinceData)
 }
 render()
 function renderHeaderData(overview) {
@@ -282,4 +283,71 @@ function renderGroupData(groupData) {
         myChart.setOption(option)
     }
   })
+}
+function renderGenderSalary(salaryData) {
+  const myChart = echarts.init(document.querySelector('#gender'))
+  const option = {
+    title: [
+      {
+        text: '男女薪资分布',
+        top: '15',
+        left: '15',
+      },
+      {
+        text: '男生',
+        left: 'center',
+        top: '45%',
+        textStyle: {
+          fontSize: 12,
+        },
+      },
+      {
+        text: '女生',
+        left: 'center',
+        top: '85%',
+        textStyle: {
+          fontSize: 12,
+        },
+      },
+    ],
+    dataset: [
+      {
+        source: [['label', 'count', 'gender'], ...salaryData.map(ele => [ele.label, ele.b_count, 'man']), ...salaryData.map(ele => [ele.label, ele.g_count, 'woman'])],
+      },
+      {
+        transform: {
+          type: 'filter',
+          config: { dimension: 'gender', value: 'man' },
+        },
+      },
+      {
+        transform: {
+          type: 'filter',
+          config: { dimension: 'gender', value: 'woman' },
+        },
+      },
+    ],
+    series: [
+      {
+        type: 'pie',
+        radius: ['20%', '30%'],
+        center: ['50%', '30%'],
+        datasetIndex: 1,
+      },
+      {
+        type: 'pie',
+        radius: ['20%', '30%'],
+        center: ['50%', '70%'],
+        datasetIndex: 2,
+      },
+    ],
+    color: ['red', 'blue', 'skyblue', 'green'],
+  }
+  myChart.setOption(option)
+}
+function renderProvinceData(provinceData) {
+  console.log(provinceData)
+  const myChart = echaers.init(document.querySelector('#map'))
+  const option = ''
+  myChart.setOption(option)
 }
