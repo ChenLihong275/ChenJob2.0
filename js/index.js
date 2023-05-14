@@ -7,17 +7,20 @@ logout('login.html')
 // 进入页面渲染
 async function render() {
   const res = await axios({ url: '/dashboard' })
-  const { overview, year } = res.data
+  const { overview, year, salaryData, groupData } = res.data
   renderHeaderData(overview)
   renderYear(year)
+  renderSalary(salaryData)
+  renderGroupData(groupData)
 }
 render()
 function renderHeaderData(overview) {
   Object.keys(overview).forEach(key => (document.querySelector(`.${key}`).innerHTML = overview[key]))
 }
 function renderYear(year) {
-  const myLine = echarts.init(document.querySelector('#line'))
+  const myChart = echarts.init(document.querySelector('#line'))
   const option = {
+    // 标题抬头
     title: {
       text: '2023年全年薪资走势',
       left: 10,
@@ -27,6 +30,7 @@ function renderYear(year) {
     grid: {
       top: '20%',
     },
+    // y轴
     yAxis: {
       // type为数据类型，value指数值轴
       type: 'value',
@@ -38,6 +42,7 @@ function renderYear(year) {
         },
       },
     },
+    // x轴
     xAxis: {
       // type为数据类型，category指类目轴（指一些不连续，离散的数据）
       type: 'category',
@@ -50,6 +55,7 @@ function renderYear(year) {
         },
       },
     },
+    // 系列列表
     series: [
       {
         data: year.map(ele => ele.salary),
@@ -104,10 +110,95 @@ function renderYear(year) {
         smooth: 0.5,
       },
     ],
+    // 提示框组件
     tooltip: {
       show: true,
       trigger: 'axis',
     },
   }
-  myLine.setOption(option)
+  myChart.setOption(option)
+}
+function renderSalary(salaryData) {
+  const myChart = echarts.init(document.querySelector('#salary'))
+  const option = {
+    title: {
+      text: '班级薪资分布',
+      top: 10,
+      left: 15,
+    },
+    tooltip: {
+      trigger: 'item',
+    },
+    legend: {
+      bottom: '5%',
+      left: 'center',
+    },
+    series: [
+      {
+        name: '班级薪资分布',
+        type: 'pie',
+        radius: ['55%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 20,
+          borderColor: '#fff',
+          borderWidth: 2,
+        },
+        // 文本标签
+        label: {
+          show: false,
+          position: 'center',
+        },
+        // emphasis: {
+        //   label: {
+        //     show: true,
+        //     fontSize: 40,
+        //     fontWeight: 'bold',
+        //   },
+        // },
+        // 文本标签指引线
+        labelLine: {
+          show: false,
+        },
+        data: salaryData.map(ele => {
+          return {
+            name: ele.label,
+            value: ele.b_count + ele.g_count,
+          }
+        }),
+      },
+    ],
+    color: ['skyblue', 'red', 'yellow', 'blue'],
+  }
+  myChart.setOption(option)
+}
+function renderGroupData(groupData) {
+  console.log(groupData)
+  console.log(groupData[1])
+  const myChart = echarts.init(document.querySelector('#lines'))
+  const option = {
+    legend: {
+      type: 'plain',
+    },
+    tooltip: {},
+    dataset: {
+      dimensions: ['product', '期望薪资', '实际薪资'],
+      source: groupData[1].map(ele => {
+        return { product: ele.name, 期望薪资: ele.hope_salary, 实际薪资: ele.salary }
+      }),
+    },
+    xAxis: {
+      type: 'category',
+      axisLine: {
+        lineStyle: {
+          type: 'dashed',
+        },
+      },
+    },
+    yAxis: {},
+    // Declare several bar series, each will be mapped
+    // to a column of dataset.source by default.
+    series: [{ type: 'bar' }, { type: 'bar' }],
+  }
+  myChart.setOption(option)
 }

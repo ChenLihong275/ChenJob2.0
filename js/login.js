@@ -14,9 +14,9 @@ document.querySelector('#btn-login').addEventListener('click', async function ()
   }
   try {
     const res = await axios.post('/login', { username, password })
-    toastShow(res.data.message)
-    localStorage.setItem('username', res.data.data.username)
-    localStorage.setItem('token', res.data.data.token)
+    toastShow(res.message)
+    localStorage.setItem('username', res.data.username)
+    localStorage.setItem('token', res.data.token)
     setTimeout(() => (location.href = 'index.html'), 1500)
   } catch (error) {
     toastShow(error.response.data.message)

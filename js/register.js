@@ -13,7 +13,7 @@ document.querySelector('#btn-register').addEventListener('click', async function
   }
   try {
     const res = await axios.post('/register', { username, password })
-    toastShow(res.data.message)
+    toastShow(res.message)
   } catch (error) {
     toastShow(error.response.data.message)
   }
